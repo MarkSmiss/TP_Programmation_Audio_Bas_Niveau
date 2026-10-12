@@ -1,0 +1,3 @@
+E:\Prog4A\Tools\TP_Programmation_Audio\WinformCplusplus\Debug\WinformCplusplus.vcxproj.AssemblyReference.cache
+E:\Prog4A\Tools\TP_Programmation_Audio\WinformCplusplus\Debug\WinformCplusplus.MyForm.resources
+E:\Prog4A\Tools\TP_Programmation_Audio\WinformCplusplus\Debug\WinformCplusplus.vcxproj.GenerateResource.cache

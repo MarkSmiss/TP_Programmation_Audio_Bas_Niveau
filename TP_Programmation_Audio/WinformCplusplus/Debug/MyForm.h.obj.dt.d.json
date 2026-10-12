@@ -1,0 +1,12 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\prog4a\\tools\\tp_programmation_audio\\winformcplusplus\\myform.h",
+        "ProvidedModule": "",
+        "Includes": [
+            "e:\\prog4a\\tools\\tp_programmation_audio\\winformcplusplus\\player.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
