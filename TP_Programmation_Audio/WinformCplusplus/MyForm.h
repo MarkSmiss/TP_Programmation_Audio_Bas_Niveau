@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <msclr/marshal.h>
 #define	WATER_STREAM_0		"Ruisseau_Escattes_01.wav"
 #define	WATER_STREAM_1		"Ruisseau_Escattes_02.wav"
 #pragma once
@@ -11,6 +12,7 @@ namespace WinformCplusplus {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace msclr::interop;
 
 	/// <summary>
 	/// Description résumée de MyForm
@@ -18,7 +20,7 @@ namespace WinformCplusplus {
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	public:
-		
+
 		MyForm(void)
 		{
 			InitializeComponent();
@@ -27,7 +29,7 @@ namespace WinformCplusplus {
 			//
 			init();
 		}
-		
+
 
 	protected:
 		/// <summary>
@@ -41,11 +43,13 @@ namespace WinformCplusplus {
 			}
 		}
 
-	private: System::Windows::Forms::OpenFileDialog^  openFileDialog1;
+	private: System::Windows::Forms::OpenFileDialog^ openFileDialog1;
+	private: System::String^ openedFileName;
+
 	protected:
-	private: System::Windows::Forms::Label^  label1;
-	private: System::Windows::Forms::SaveFileDialog^  saveFileDialog1;
-	private: System::Windows::Forms::Button^  button1;
+	private: System::Windows::Forms::Label^ label1;
+	private: System::Windows::Forms::SaveFileDialog^ saveFileDialog1;
+	private: System::Windows::Forms::Button^ button1;
 	private: System::Windows::Forms::MenuStrip^ menuStrip1;
 	private: System::Windows::Forms::ToolStripMenuItem^ filesToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ openToolStripMenuItem;
@@ -54,7 +58,7 @@ namespace WinformCplusplus {
 		/// <summary>
 		/// Variable nécessaire au concepteur.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -138,13 +142,28 @@ namespace WinformCplusplus {
 
 		}
 #pragma endregion
-	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
+	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
 
-		Play(WATER_STREAM_0);
-		Play(WATER_STREAM_1);
+		if (openedFileName != System::String::Empty)
+		{
+			marshal_context^ context = gcnew marshal_context();
+			const char* nativeString = context->marshal_as<const char*>(openedFileName);
+			Play(nativeString);
+			delete context;
+		}
 	}
 	private: System::Void OpenMenuFile(System::Object^ sender, System::EventArgs^ e) {
 		this->openFileDialog1->Filter = "";
+
+		System::Windows::Forms::DialogResult resultat = openFileDialog1->ShowDialog();
+		if (resultat == System::Windows::Forms::DialogResult::OK)
+		{
+			openedFileName = openFileDialog1->FileName;
+		}
+		else
+		{
+			openedFileName = System::String::Empty;
+		}
 	}
-};
+	};
 }
