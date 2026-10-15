@@ -1,4 +1,5 @@
 #include "Player.h"
+
 #include <msclr/marshal.h>
 #define	WATER_STREAM_0		"Ruisseau_Escattes_01.wav"
 #define	WATER_STREAM_1		"Ruisseau_Escattes_02.wav"
@@ -232,6 +233,7 @@ namespace WinformCplusplus {
 
 		}
 #pragma endregion
+		// Fonction bouton pour jouer le sons
 	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
 
 		if (openedFileName != System::String::Empty)
@@ -246,8 +248,12 @@ namespace WinformCplusplus {
 			System::Windows::Forms::MessageBox::Show("No File selected");
 		}
 	}
+		   //Fonction bouton pour récupérer le sons depuis l'explorateur de fichiers
 	private: System::Void OpenMenuFile(System::Object^ sender, System::EventArgs^ e) {
-		this->openFileDialog1->Filter = "Fichiers audio(*.wav;*.ogg;*.mp3;*.mp4)|*.wav;*.ogg;*.mp3;*.mp4";
+		this->openFileDialog1->Filter = "Fichiers audio(*.wav;*.ogg;*.mp3;*.mp4)|*.wav;*.ogg;*.mp3;*.mp4|"
+										"Fichiers WAV(*.wav)|*.wav|"
+										"Fichiers OGG(*.ogg)|*.ogg|"
+										"Tous les fichiers (*.*)|*.*";
 
 		System::Windows::Forms::DialogResult resultat = openFileDialog1->ShowDialog();
 		if (resultat == System::Windows::Forms::DialogResult::OK)
@@ -259,6 +265,7 @@ namespace WinformCplusplus {
 			openedFileName = System::String::Empty;
 		}
 	}
+		   // Fonction bouton pour mettre en pause le sons
 	private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e)
 	{
 		if (openedFileName != System::String::Empty)
@@ -281,6 +288,7 @@ namespace WinformCplusplus {
 			MessageBox::Show("No File selected");
 		}
 	}
+		   // Fonction bouton pour arrêter le sons
 	private: System::Void button3_Click(System::Object^ sender, System::EventArgs^ e)
 	{
 		if (openedFileName != System::String::Empty)
@@ -303,6 +311,7 @@ namespace WinformCplusplus {
 			MessageBox::Show("No File selected");
 		}
 	}
+		   // Fonction bouton pour reprendre le déroulement du sons
 	private: System::Void button4_Click(System::Object^ sender, System::EventArgs^ e)
 	{
 		if (openedFileName != System::String::Empty)
