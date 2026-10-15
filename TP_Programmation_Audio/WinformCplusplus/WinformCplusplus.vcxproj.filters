@@ -62,4 +62,7 @@
       <Filter>Fichiers de ressources</Filter>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

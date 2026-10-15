@@ -69,6 +69,8 @@ namespace WinformCplusplus {
 
 
 
+
+
 	private:
 		/// <summary>
 		/// Variable nécessaire au concepteur.
@@ -90,11 +92,11 @@ namespace WinformCplusplus {
 			this->trackBar1 = (gcnew System::Windows::Forms::TrackBar());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
+			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->button2 = (gcnew System::Windows::Forms::Button());
+			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->button4 = (gcnew System::Windows::Forms::Button());
 			this->button3 = (gcnew System::Windows::Forms::Button());
-			this->button1 = (gcnew System::Windows::Forms::Button());
-			this->button2 = (gcnew System::Windows::Forms::Button());
-			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
 			this->menuStrip1->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			this->panel1->SuspendLayout();
@@ -159,6 +161,35 @@ namespace WinformCplusplus {
 			this->panel1->Size = System::Drawing::Size(551, 464);
 			this->panel1->TabIndex = 9;
 			// 
+			// groupBox2
+			// 
+			this->groupBox2->Location = System::Drawing::Point(18, 25);
+			this->groupBox2->Name = L"groupBox2";
+			this->groupBox2->Size = System::Drawing::Size(245, 61);
+			this->groupBox2->TabIndex = 7;
+			this->groupBox2->TabStop = false;
+			this->groupBox2->Text = L"Current Song";
+			// 
+			// button2
+			// 
+			this->button2->Location = System::Drawing::Point(104, 121);
+			this->button2->Name = L"button2";
+			this->button2->Size = System::Drawing::Size(75, 23);
+			this->button2->TabIndex = 3;
+			this->button2->Text = L"Pause";
+			this->button2->UseVisualStyleBackColor = true;
+			this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click);
+			// 
+			// button1
+			// 
+			this->button1->Location = System::Drawing::Point(104, 92);
+			this->button1->Name = L"button1";
+			this->button1->Size = System::Drawing::Size(75, 23);
+			this->button1->TabIndex = 1;
+			this->button1->Text = L"Play";
+			this->button1->UseVisualStyleBackColor = true;
+			this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
+			// 
 			// button4
 			// 
 			this->button4->Location = System::Drawing::Point(104, 149);
@@ -178,35 +209,6 @@ namespace WinformCplusplus {
 			this->button3->Text = L"Stop";
 			this->button3->UseVisualStyleBackColor = true;
 			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
-			// 
-			// button1
-			// 
-			this->button1->Location = System::Drawing::Point(104, 92);
-			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(75, 23);
-			this->button1->TabIndex = 1;
-			this->button1->Text = L"Play";
-			this->button1->UseVisualStyleBackColor = true;
-			this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
-			// 
-			// button2
-			// 
-			this->button2->Location = System::Drawing::Point(104, 121);
-			this->button2->Name = L"button2";
-			this->button2->Size = System::Drawing::Size(75, 23);
-			this->button2->TabIndex = 3;
-			this->button2->Text = L"Pause";
-			this->button2->UseVisualStyleBackColor = true;
-			this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click);
-			// 
-			// groupBox2
-			// 
-			this->groupBox2->Location = System::Drawing::Point(18, 25);
-			this->groupBox2->Name = L"groupBox2";
-			this->groupBox2->Size = System::Drawing::Size(245, 61);
-			this->groupBox2->TabIndex = 7;
-			this->groupBox2->TabStop = false;
-			this->groupBox2->Text = L"Current Song";
 			// 
 			// MyForm
 			// 
@@ -245,7 +247,7 @@ namespace WinformCplusplus {
 		}
 	}
 	private: System::Void OpenMenuFile(System::Object^ sender, System::EventArgs^ e) {
-		this->openFileDialog1->Filter = "";
+		this->openFileDialog1->Filter = "Fichiers audio(*.wav;*.ogg;*.mp3;*.mp4)|*.wav;*.ogg;*.mp3;*.mp4";
 
 		System::Windows::Forms::DialogResult resultat = openFileDialog1->ShowDialog();
 		if (resultat == System::Windows::Forms::DialogResult::OK)
@@ -323,5 +325,5 @@ namespace WinformCplusplus {
 			MessageBox::Show("No File selected");
 		}
 	}
-	};
+};
 }
