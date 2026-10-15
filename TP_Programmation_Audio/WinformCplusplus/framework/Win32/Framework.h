@@ -3,6 +3,7 @@
 
 // Get some classic includes
 #include<Windows.h>
+#include <iostream>
 #include<stdio.h>
 #include<io.h>
 #include<fcntl.h>

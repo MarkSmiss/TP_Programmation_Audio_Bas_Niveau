@@ -2,7 +2,7 @@
 #include"Framework.h"
 #include <map>
 
-static std::map<const char*, ALuint*> sound_sources;
+std::map<std::string, std::pair<ALuint, ALuint>> sound_sources;
 
 int init() {
 	// Initialize Framework
@@ -37,10 +37,10 @@ int Play(const char* fileName)
 	//pour boucler un son
 	alSourcei(uiSource, AL_LOOPING, 1);
 
-	sound_sources[fileName] = &uiSource;
+	//sound_sources[fileName] = &uiSource;
 	// Play Source
 	alSourcePlay(uiSource);
-
+	sound_sources[fileName] = std::pair<ALuint, ALuint>(uiSource, uiBuffer);
 	//do
 	//{
 	//	Sleep(100);
@@ -65,30 +65,39 @@ int Play(const char* fileName)
 
 int Pause(const char* fileName)
 {
-	alSourcePause(*sound_sources[fileName]);
-	return 0;
-	if (alIsSource(*sound_sources[fileName]))
+	ALuint* source = &sound_sources[fileName].first;
+	if (source)
 	{
+		alSourcePause(*source);
+		return 0;
 	}
 	return -1;
 }
 
 int Resume(const char* fileName)
 {
-	alSourcePlay(*sound_sources[fileName]);
-	return 0;
-	if (alIsSource(*sound_sources[fileName]))
+	ALuint* source = &sound_sources[fileName].first;
+	if (source)
 	{
+		alSourcePlay(*source);
+		return 0;
 	}
 	return -1;
 }
 
 int Stop(const char* fileName)
 {
-	alSourceStop(*sound_sources[fileName]);
-	return 0;
-	if (alIsSource(*sound_sources[fileName]))
+	ALuint* source = &sound_sources[fileName].first;
+	ALuint* buffer = &sound_sources[fileName].second;
+	if (source)
 	{
+		alSourceStop(*source);
+
+		alDeleteSources(1, source);
+		alDeleteBuffers(1, buffer);
+
+		sound_sources.erase(fileName);
+		return 0;
 	}
 	return -1;
 }
