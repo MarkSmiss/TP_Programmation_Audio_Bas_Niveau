@@ -82,6 +82,7 @@ namespace WinformCplusplus {
 	private: System::Windows::Forms::ListBox^ listBox1;
 	private: System::Windows::Forms::Label^ CurrentSong;
 	private: System::Windows::Forms::Timer^ ToolTimer;
+	private: System::Windows::Forms::Button^ button5;
 	private: System::ComponentModel::IContainer^ components;
 
 
@@ -125,7 +126,9 @@ namespace WinformCplusplus {
 			this->button4 = (gcnew System::Windows::Forms::Button());
 			this->button3 = (gcnew System::Windows::Forms::Button());
 			this->ToolTimer = (gcnew System::Windows::Forms::Timer(this->components));
+			this->button5 = (gcnew System::Windows::Forms::Button());
 			this->menuStrip1->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarVolume))->BeginInit();
 			this->groupBox1->SuspendLayout();
 			this->panel1->SuspendLayout();
 			this->groupBox2->SuspendLayout();
@@ -157,7 +160,7 @@ namespace WinformCplusplus {
 			// openToolStripMenuItem
 			// 
 			this->openToolStripMenuItem->Name = L"openToolStripMenuItem";
-			this->openToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->openToolStripMenuItem->Size = System::Drawing::Size(180, 22);
 			this->openToolStripMenuItem->Text = L"Load audio file";
 			this->openToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::OpenMenuFile);
 			// 
@@ -196,7 +199,7 @@ namespace WinformCplusplus {
 			this->clearPlaylistToolStripMenuItem->Size = System::Drawing::Size(150, 22);
 			this->clearPlaylistToolStripMenuItem->Text = L"Clear playlist";
 			// 
-			// SoundTrackBar
+			// trackBarVolume
 			// 
 			this->trackBarVolume->Location = System::Drawing::Point(281, 3);
 			this->trackBarVolume->Name = L"trackBarVolume";
@@ -227,6 +230,7 @@ namespace WinformCplusplus {
 			// panel1
 			// 
 			this->panel1->BackColor = System::Drawing::SystemColors::ControlLightLight;
+			this->panel1->Controls->Add(this->button5);
 			this->panel1->Controls->Add(this->checkBoxLoop);
 			this->panel1->Controls->Add(this->groupBox2);
 			this->panel1->Controls->Add(this->button2);
@@ -317,6 +321,16 @@ namespace WinformCplusplus {
 			// 
 			this->ToolTimer->Interval = 50;
 			this->ToolTimer->Tick += gcnew System::EventHandler(this, &MyForm::ToolTimer_Tick);
+			// 
+			// button5
+			// 
+			this->button5->Location = System::Drawing::Point(18, 207);
+			this->button5->Name = L"button5";
+			this->button5->Size = System::Drawing::Size(75, 23);
+			this->button5->TabIndex = 10;
+			this->button5->Text = L"Skip";
+			this->button5->UseVisualStyleBackColor = true;
+			this->button5->Click += gcnew System::EventHandler(this, &MyForm::button5_Click);
 			// 
 			// MyForm
 			// 
@@ -512,7 +526,6 @@ namespace WinformCplusplus {
 		if (IsAudioFinished(ManagedToNativeString(openedFileName)) && !isCurrentAudioFinished)
 		{
 			isCurrentAudioFinished = true;
-			MessageBox::Show("finished");
 			bool result = PlayNextFromPlaylist();
 			if (result)
 			{
@@ -524,9 +537,19 @@ namespace WinformCplusplus {
 					isCurrentAudioFinished = false;
 				}
 			}
-			else
+		}
+	}
+	private: System::Void button5_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		bool result = PlayNextFromPlaylist();
+		if (result)
+		{
+			if (listBox1->Items->Count > 0)
 			{
-				MessageBox::Show("Cant play next from playlist");
+				openedFileName = msclr::interop::marshal_as<System::String^>(GetPlayingAudioName());
+				CurrentSong->Text = listBox1->Items[0]->ToString();
+				listBox1->Items->RemoveAt(0);
+				isCurrentAudioFinished = false;
 			}
 		}
 	}

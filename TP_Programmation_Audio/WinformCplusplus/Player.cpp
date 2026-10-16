@@ -124,6 +124,8 @@ int Play(const char* fileName)
 		Stop(fileName);
 	}
 
+	Stop(playingSongName.c_str());
+
 	ALuint      uiBuffer = 0;
 	ALuint      uiSource = 0;
 
@@ -173,7 +175,7 @@ int Play(const char* fileName)
 	alSourcei(uiSource, AL_BUFFER, uiBuffer);
 
 	//pour boucler un son
-	alSourcei(uiSource, AL_LOOPING, AL_TRUE);
+	//alSourcei(uiSource, AL_LOOPING, AL_TRUE);
 
 	//sound_sources[fileName] = &uiSource;
 	// Play Source
@@ -205,10 +207,10 @@ int Play(const char* fileName)
 
 int Pause(const char* fileName)
 {
-	ALuint* source = &sound_sources[fileName].first;
-	if (source)
+	auto it = sound_sources.find(fileName);
+	if (it != sound_sources.end())
 	{
-		alSourcePause(*source);
+		alSourcePause(it->second.first);
 		return 0;
 	}
 	return -1;
@@ -216,30 +218,14 @@ int Pause(const char* fileName)
 
 int Resume(const char* fileName)
 {
-	ALuint* source = &sound_sources[fileName].first;
-	if (source)
+	auto it = sound_sources.find(fileName);
+	if (it != sound_sources.end())
 	{
-		alSourcePlay(*source);
+		alSourcePlay(it->second.first);
 		return 0;
 	}
 	return -1;
 }
-
-//int Stop(const char* fileName)
-//{
-//	ALuint* source = &sound_sources[fileName].first;
-//	ALuint* buffer = &sound_sources[fileName].second;
-//	if (source)
-//	{
-//		alSourceStop(*source);
-//		alDeleteSources(1, source);
-//		alDeleteBuffers(1, buffer);
-//
-//		sound_sources.erase(fileName);
-//		return 0;
-//	}
-//	return -1;
-//}
 
 int Stop(const char* fileName)
 {
@@ -263,15 +249,12 @@ int Stop(const char* fileName)
 
 int ToggleLoop(const char* _fileName, bool _loopEnabled)
 {
-	ALuint source = sound_sources[_fileName].first;
-
-	if (source)
+	auto it = sound_sources.find(_fileName);
+	if (it != sound_sources.end())
 	{
-		alSourcei(source, AL_LOOPING, _loopEnabled ? AL_TRUE : AL_FALSE);
-		return -0;
+		alSourcei(it->second.first, AL_LOOPING, _loopEnabled ? AL_TRUE : AL_FALSE);
+		return 0;
 	}
-
-
 	return -1;
 }
 
@@ -303,13 +286,15 @@ int SetVolume(const char* _fileName, float _percentVolume)
 
 bool IsAudioFinished(std::string _fileName)
 {
-	ALint state;
-	alGetSourcei(sound_sources[_fileName].first, AL_SOURCE_STATE, &state);
-	if (state == AL_STOPPED)
+	auto it = sound_sources.find(_fileName);
+	if (it == sound_sources.end())
 	{
 		return true;
 	}
-	return false;
+
+	ALint state = 0;
+	alGetSourcei(it->second.first, AL_SOURCE_STATE, &state);
+	return (state == AL_STOPPED);
 }
 
 void AddToPlaylist(System::String^ _fileName)
