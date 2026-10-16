@@ -4,6 +4,7 @@
 #include"Framework.h"
 #include <map>
 #include <vector>
+#include <list>
 
 #include <al.h>
 #include <alc.h>
@@ -11,6 +12,9 @@
 #include <Windows.h>
 
 std::map<std::string, std::pair<ALuint, ALuint>> sound_sources;
+std::list<std::pair<std::string, std::string>> sound_names;
+
+std::string playingSongName = std::string();
 
 int init() {
 	// Initialize Framework
@@ -30,6 +34,7 @@ bool LoadOggToBuffer(const char* _fileName, ALuint _buffer)
 
 	if (ov_fopen(_fileName, &oggFile) != 0)
 	{
+		System::Windows::Forms::MessageBox::Show("unable to open file");
 		return false;
 	}
 
@@ -41,6 +46,7 @@ bool LoadOggToBuffer(const char* _fileName, ALuint _buffer)
 		info->rate > (std::numeric_limits<ALsizei>::max)())
 	{
 		ov_clear(&oggFile);
+		System::Windows::Forms::MessageBox::Show("nullptr");
 		return false;
 	}
 
@@ -61,6 +67,7 @@ bool LoadOggToBuffer(const char* _fileName, ALuint _buffer)
 			static_cast<size_t>((std::numeric_limits<ALsizei>::max)()))
 		{
 			ov_clear(&oggFile);
+			System::Windows::Forms::MessageBox::Show("WHILE");
 			return false;
 		}
 
@@ -72,6 +79,7 @@ bool LoadOggToBuffer(const char* _fileName, ALuint _buffer)
 	if (bytesRead < 0 || pcm.empty())
 	{
 		// Erreur de codage
+		System::Windows::Forms::MessageBox::Show("bytesRead < 0 || pcm.empty()");
 		return false;
 	}
 
@@ -81,7 +89,14 @@ bool LoadOggToBuffer(const char* _fileName, ALuint _buffer)
 		static_cast<ALsizei>(pcm.size()),
 		sampleRate);
 
-	return alGetError() == AL_NO_ERROR;
+	ALenum err = alGetError();
+	if (err != AL_NO_ERROR)
+	{
+		System::Windows::Forms::MessageBox::Show("Err open al code : " + err.ToString());
+		return false;
+	}
+
+	return true;
 }
 
 bool CheckFileNameError(const char* _fileName)
@@ -135,6 +150,8 @@ int Play(const char* fileName)
 
 		if (!loaded)
 		{
+			System::Windows::Forms::MessageBox::Show("Failed to load ogg sa mere");
+
 			ALFWprintf("Failed to load %s\n", fileName);
 			return -1;
 		}
@@ -143,7 +160,6 @@ int Play(const char* fileName)
 	{
 		System::Windows::Forms::MessageBox::Show("Unknown format.");
 	}
-
 	if (!loaded)
 	{
 		alDeleteBuffers(1, &uiBuffer);
@@ -155,13 +171,16 @@ int Play(const char* fileName)
 
 	// Attach Source to Buffer
 	alSourcei(uiSource, AL_BUFFER, uiBuffer);
+
 	//pour boucler un son
 	alSourcei(uiSource, AL_LOOPING, AL_TRUE);
 
 	//sound_sources[fileName] = &uiSource;
 	// Play Source
 	sound_sources[fileName] = std::pair<ALuint, ALuint>(uiSource, uiBuffer);
+	playingSongName = fileName;
 	alSourcePlay(uiSource);
+
 	//do
 	//{
 	//	Sleep(100);
@@ -206,18 +225,37 @@ int Resume(const char* fileName)
 	return -1;
 }
 
+//int Stop(const char* fileName)
+//{
+//	ALuint* source = &sound_sources[fileName].first;
+//	ALuint* buffer = &sound_sources[fileName].second;
+//	if (source)
+//	{
+//		alSourceStop(*source);
+//		alDeleteSources(1, source);
+//		alDeleteBuffers(1, buffer);
+//
+//		sound_sources.erase(fileName);
+//		return 0;
+//	}
+//	return -1;
+//}
+
 int Stop(const char* fileName)
 {
-	ALuint* source = &sound_sources[fileName].first;
-	ALuint* buffer = &sound_sources[fileName].second;
-	if (source)
+	if (CheckFileNameError(fileName)) return -1;
+
+	auto it = sound_sources.find(fileName);
+	if (it != sound_sources.end())
 	{
-		alSourceStop(*source);
+		ALuint source = it->second.first;
+		ALuint buffer = it->second.second;
 
-		alDeleteSources(1, source);
-		alDeleteBuffers(1, buffer);
+		alSourceStop(source);
+		alDeleteSources(1, &source);
+		alDeleteBuffers(1, &buffer);
 
-		sound_sources.erase(fileName);
+		sound_sources.erase(it);
 		return 0;
 	}
 	return -1;
@@ -261,4 +299,44 @@ int SetVolume(const char* _fileName, float _percentVolume)
 	alSourcef(source, AL_GAIN, _percentVolume);
 
 	return alGetError() == AL_NO_ERROR ? 0 : -1;
+}
+
+bool IsAudioFinished(std::string _fileName)
+{
+	ALint state;
+	alGetSourcei(sound_sources[_fileName].first, AL_SOURCE_STATE, &state);
+	if (state == AL_STOPPED)
+	{
+		return true;
+	}
+	return false;
+}
+
+void AddToPlaylist(System::String^ _fileName)
+{
+	std::string fileName = ManagedToNativeString(_fileName);
+	std::string audioName = ManagedToNativeString(GetAudioName(_fileName));
+	std::pair<std::string, std::string> pair =
+	{
+		fileName,
+		audioName
+	};
+	sound_names.push_back(pair);
+}
+
+bool PlayNextFromPlaylist()
+{
+	if (!sound_names.empty())
+	{
+		Play(sound_names.front().first.c_str());
+		sound_names.pop_front();
+		return true;
+	}
+
+	return false;
+}
+
+std::string GetPlayingAudioName()
+{
+	return playingSongName;
 }

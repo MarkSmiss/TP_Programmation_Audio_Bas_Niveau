@@ -48,6 +48,8 @@ namespace WinformCplusplus {
 
 	private: System::Windows::Forms::OpenFileDialog^ openFileDialog1;
 	private: System::String^ openedFileName;
+	private: System::String^ currentAudioName;
+	private: bool isCurrentAudioFinished;
 
 	protected:
 
@@ -71,7 +73,16 @@ namespace WinformCplusplus {
 	private: System::Windows::Forms::Button^ button4;
 	private: System::Windows::Forms::Button^ button3;
 	private: System::Windows::Forms::CheckBox^ checkBoxLoop;
+	private: System::Windows::Forms::ToolStripMenuItem^ playlistToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^ addPlaylistButton;
 
+	private: System::Windows::Forms::ToolStripMenuItem^ loadPlaylistToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^ clearPlaylistToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^ savePlaylistToolStripMenuItem;
+	private: System::Windows::Forms::ListBox^ listBox1;
+	private: System::Windows::Forms::Label^ CurrentSong;
+	private: System::Windows::Forms::Timer^ ToolTimer;
+	private: System::ComponentModel::IContainer^ components;
 
 
 
@@ -82,7 +93,7 @@ namespace WinformCplusplus {
 		/// <summary>
 		/// Variable nécessaire au concepteur.
 		/// </summary>
-		System::ComponentModel::Container^ components;
+
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -91,23 +102,33 @@ namespace WinformCplusplus {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->filesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->playlistToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->addPlaylistButton = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->loadPlaylistToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->savePlaylistToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->clearPlaylistToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->trackBarVolume = (gcnew System::Windows::Forms::TrackBar());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
 			this->checkBoxLoop = (gcnew System::Windows::Forms::CheckBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->CurrentSong = (gcnew System::Windows::Forms::Label());
 			this->button2 = (gcnew System::Windows::Forms::Button());
 			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->button4 = (gcnew System::Windows::Forms::Button());
 			this->button3 = (gcnew System::Windows::Forms::Button());
+			this->ToolTimer = (gcnew System::Windows::Forms::Timer(this->components));
 			this->menuStrip1->SuspendLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarVolume))->BeginInit();
+			this->groupBox1->SuspendLayout();
 			this->panel1->SuspendLayout();
+			this->groupBox2->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// openFileDialog1
@@ -116,7 +137,10 @@ namespace WinformCplusplus {
 			// 
 			// menuStrip1
 			// 
-			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->filesToolStripMenuItem });
+			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+				this->filesToolStripMenuItem,
+					this->playlistToolStripMenuItem
+			});
 			this->menuStrip1->Location = System::Drawing::Point(0, 0);
 			this->menuStrip1->Name = L"menuStrip1";
 			this->menuStrip1->Size = System::Drawing::Size(575, 24);
@@ -127,17 +151,52 @@ namespace WinformCplusplus {
 			// 
 			this->filesToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->openToolStripMenuItem });
 			this->filesToolStripMenuItem->Name = L"filesToolStripMenuItem";
-			this->filesToolStripMenuItem->Size = System::Drawing::Size(42, 20);
-			this->filesToolStripMenuItem->Text = L"Files";
+			this->filesToolStripMenuItem->Size = System::Drawing::Size(37, 20);
+			this->filesToolStripMenuItem->Text = L"File";
 			// 
 			// openToolStripMenuItem
 			// 
 			this->openToolStripMenuItem->Name = L"openToolStripMenuItem";
-			this->openToolStripMenuItem->Size = System::Drawing::Size(103, 22);
-			this->openToolStripMenuItem->Text = L"Open";
+			this->openToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->openToolStripMenuItem->Text = L"Load audio file";
 			this->openToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::OpenMenuFile);
 			// 
-			// trackBarVolume
+			// playlistToolStripMenuItem
+			// 
+			this->playlistToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+				this->addPlaylistButton,
+					this->loadPlaylistToolStripMenuItem, this->savePlaylistToolStripMenuItem, this->clearPlaylistToolStripMenuItem
+			});
+			this->playlistToolStripMenuItem->Name = L"playlistToolStripMenuItem";
+			this->playlistToolStripMenuItem->Size = System::Drawing::Size(56, 20);
+			this->playlistToolStripMenuItem->Text = L"Playlist";
+			// 
+			// addPlaylistButton
+			// 
+			this->addPlaylistButton->Name = L"addPlaylistButton";
+			this->addPlaylistButton->Size = System::Drawing::Size(150, 22);
+			this->addPlaylistButton->Text = L"Add to playlist";
+			this->addPlaylistButton->Click += gcnew System::EventHandler(this, &MyForm::addPlaylistButton_Click);
+			// 
+			// loadPlaylistToolStripMenuItem
+			// 
+			this->loadPlaylistToolStripMenuItem->Name = L"loadPlaylistToolStripMenuItem";
+			this->loadPlaylistToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+			this->loadPlaylistToolStripMenuItem->Text = L"Load playlist";
+			// 
+			// savePlaylistToolStripMenuItem
+			// 
+			this->savePlaylistToolStripMenuItem->Name = L"savePlaylistToolStripMenuItem";
+			this->savePlaylistToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+			this->savePlaylistToolStripMenuItem->Text = L"Save playlist";
+			// 
+			// clearPlaylistToolStripMenuItem
+			// 
+			this->clearPlaylistToolStripMenuItem->Name = L"clearPlaylistToolStripMenuItem";
+			this->clearPlaylistToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+			this->clearPlaylistToolStripMenuItem->Text = L"Clear playlist";
+			// 
+			// SoundTrackBar
 			// 
 			this->trackBarVolume->Location = System::Drawing::Point(281, 3);
 			this->trackBarVolume->Name = L"trackBarVolume";
@@ -149,12 +208,21 @@ namespace WinformCplusplus {
 			// groupBox1
 			// 
 			this->groupBox1->BackColor = System::Drawing::SystemColors::InactiveCaption;
+			this->groupBox1->Controls->Add(this->listBox1);
 			this->groupBox1->Location = System::Drawing::Point(344, 50);
 			this->groupBox1->Name = L"groupBox1";
 			this->groupBox1->Size = System::Drawing::Size(200, 434);
 			this->groupBox1->TabIndex = 8;
 			this->groupBox1->TabStop = false;
 			this->groupBox1->Text = L"Playlist";
+			// 
+			// listBox1
+			// 
+			this->listBox1->FormattingEnabled = true;
+			this->listBox1->Location = System::Drawing::Point(6, 19);
+			this->listBox1->Name = L"listBox1";
+			this->listBox1->Size = System::Drawing::Size(188, 407);
+			this->listBox1->TabIndex = 0;
 			// 
 			// panel1
 			// 
@@ -184,12 +252,26 @@ namespace WinformCplusplus {
 			// 
 			// groupBox2
 			// 
+			this->groupBox2->Controls->Add(this->CurrentSong);
+			this->groupBox2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
 			this->groupBox2->Location = System::Drawing::Point(18, 25);
 			this->groupBox2->Name = L"groupBox2";
 			this->groupBox2->Size = System::Drawing::Size(245, 61);
 			this->groupBox2->TabIndex = 7;
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Current Song";
+			// 
+			// CurrentSong
+			// 
+			this->CurrentSong->AutoSize = true;
+			this->CurrentSong->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->CurrentSong->Location = System::Drawing::Point(16, 26);
+			this->CurrentSong->Name = L"CurrentSong";
+			this->CurrentSong->Size = System::Drawing::Size(10, 13);
+			this->CurrentSong->TabIndex = 0;
+			this->CurrentSong->Text = L"-";
 			// 
 			// button2
 			// 
@@ -231,6 +313,11 @@ namespace WinformCplusplus {
 			this->button3->UseVisualStyleBackColor = true;
 			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
 			// 
+			// ToolTimer
+			// 
+			this->ToolTimer->Interval = 50;
+			this->ToolTimer->Tick += gcnew System::EventHandler(this, &MyForm::ToolTimer_Tick);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -246,8 +333,11 @@ namespace WinformCplusplus {
 			this->menuStrip1->ResumeLayout(false);
 			this->menuStrip1->PerformLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarVolume))->EndInit();
+			this->groupBox1->ResumeLayout(false);
 			this->panel1->ResumeLayout(false);
 			this->panel1->PerformLayout();
+			this->groupBox2->ResumeLayout(false);
+			this->groupBox2->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -261,7 +351,13 @@ namespace WinformCplusplus {
 			marshal_context^ context = gcnew marshal_context();
 			const char* nativeString = context->marshal_as<const char*>(openedFileName);
 			float volume = static_cast<float>(trackBarVolume->Value) / 100.0f;
-			Play(nativeString);
+
+			int result = Play(nativeString);
+			isCurrentAudioFinished = false;
+
+			//Sound polling
+			ToolTimer->Start();
+
 			ToggleLoop(nativeString, checkBoxLoop->Checked);
 			SetVolume(nativeString, volume);
 			delete context;
@@ -280,11 +376,16 @@ namespace WinformCplusplus {
 		System::Windows::Forms::DialogResult resultat = openFileDialog1->ShowDialog();
 		if (resultat == System::Windows::Forms::DialogResult::OK)
 		{
+			Stop(ManagedToNativeString(openedFileName).c_str());
+
 			openedFileName = openFileDialog1->FileName;
+
+			System::String^ audioName = GetAudioName(openFileDialog1->FileName);
+			CurrentSong->Text = audioName;
 		}
 		else
 		{
-			openedFileName = System::String::Empty;
+			openedFileName = "-";
 		}
 	}
 		   // Fonction bouton pour mettre en pause le sons
@@ -297,7 +398,7 @@ namespace WinformCplusplus {
 			int result = Pause(nativeString);
 			if (result == 0)
 			{
-				MessageBox::Show("Sound Paused");
+				//MessageBox::Show("Sound Paused");
 			}
 			else
 			{
@@ -320,7 +421,7 @@ namespace WinformCplusplus {
 			int result = Stop(nativeString);
 			if (result == 0)
 			{
-				MessageBox::Show("Sound Stopped");
+				//MessageBox::Show("Sound Stopped");
 			}
 			else
 			{
@@ -343,7 +444,7 @@ namespace WinformCplusplus {
 			int result = Resume(nativeString);
 			if (result == 0)
 			{
-				MessageBox::Show("Sound Resumed");
+				//MessageBox::Show("Sound Resumed");
 			}
 			else
 			{
@@ -356,7 +457,6 @@ namespace WinformCplusplus {
 			MessageBox::Show("No File selected");
 		}
 	}
-
 
 
 	private: System::Void checkBoxLoop_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
@@ -376,8 +476,59 @@ namespace WinformCplusplus {
 		const char* nativeString = context.marshal_as<const char*>(openedFileName);
 
 		float volume = static_cast<float>(trackBarVolume->Value) / 100.0f;
-
 		SetVolume(nativeString, volume);
+	}
+
+	private: System::Void addPlaylistButton_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		System::Windows::Forms::OpenFileDialog^ ofd = (gcnew System::Windows::Forms::OpenFileDialog());
+
+		ofd->Filter = "Fichiers WAV(*.wav)|*.wav|"
+			"Fichiers OGG(*.ogg)|*.ogg|"
+			"Tous les fichiers (*.*)|*.*";
+
+		System::Windows::Forms::DialogResult resultat = ofd->ShowDialog();
+		if (resultat == System::Windows::Forms::DialogResult::OK)
+		{
+			std::string audioExtension = GetAudioExtension(ofd->FileName);
+			if (audioExtension == ".wav" || audioExtension == ".ogg")
+			{
+				System::String^ audioName = GetAudioName(ofd->FileName);
+				listBox1->Items->Add(audioName);
+				AddToPlaylist(ofd->FileName);
+			}
+			else
+			{
+				MessageBox::Show("Can't add this to playlist");
+			}
+		}
+		else
+		{
+			MessageBox::Show("Failed to open file");
+		}
+	}
+	private: System::Void ToolTimer_Tick(System::Object^ sender, System::EventArgs^ e)
+	{
+		if (IsAudioFinished(ManagedToNativeString(openedFileName)) && !isCurrentAudioFinished)
+		{
+			isCurrentAudioFinished = true;
+			MessageBox::Show("finished");
+			bool result = PlayNextFromPlaylist();
+			if (result)
+			{
+				if (listBox1->Items->Count > 0)
+				{
+					openedFileName = msclr::interop::marshal_as<System::String^>(GetPlayingAudioName());
+					CurrentSong->Text = listBox1->Items[0]->ToString();
+					listBox1->Items->RemoveAt(0);
+					isCurrentAudioFinished = false;
+				}
+			}
+			else
+			{
+				MessageBox::Show("Cant play next from playlist");
+			}
+		}
 	}
 	};
 }
