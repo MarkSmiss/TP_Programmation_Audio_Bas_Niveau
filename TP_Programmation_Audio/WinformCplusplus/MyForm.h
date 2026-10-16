@@ -213,6 +213,7 @@ namespace WinformCplusplus {
 			this->clearPlaylistToolStripMenuItem->Name = L"clearPlaylistToolStripMenuItem";
 			this->clearPlaylistToolStripMenuItem->Size = System::Drawing::Size(180, 22);
 			this->clearPlaylistToolStripMenuItem->Text = L"Clear playlist";
+			this->clearPlaylistToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::clearPlaylistToolStripMenuItem_Click);
 			// 
 			// trackBarVolume
 			// 
@@ -592,7 +593,10 @@ namespace WinformCplusplus {
 				isCurrentAudioFinished = false;
 
 				//Sound polling
-				ToolTimer->Start();
+				if (!ToolTimer->Enabled)
+				{
+					ToolTimer->Start();
+				}
 			}
 		}
 	}
@@ -666,7 +670,37 @@ namespace WinformCplusplus {
 				MessageBox::Show("Error when loading " + ex->Message,
 					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			}
+
+			bool result = PlayNextFromPlaylist();
+			if (result)
+			{
+				if (listBox1->Items->Count > 0)
+				{
+					openedFileName = msclr::interop::marshal_as<System::String^>(GetPlayingAudioName());
+					CurrentSong->Text = listBox1->Items[0]->ToString();
+					listBox1->Items->RemoveAt(0);
+
+					msclr::interop::marshal_context context;
+					const char* nativeString = context.marshal_as<const char*>(openedFileName);
+
+					float volume = static_cast<float>(trackBarVolume->Value) / 100.0f;
+					SetVolume(nativeString, volume);
+					isCurrentAudioFinished = false;
+
+					//Sound polling
+					if (!ToolTimer->Enabled)
+					{
+						ToolTimer->Start();
+					}
+					Pause(nativeString);
+				}
+			}
 		}
 	}
-	};
+	private: System::Void clearPlaylistToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) 
+	{
+		listBox1->Items->Clear();
+		ClearPlaylist();
+	}
+};
 }

@@ -309,6 +309,11 @@ void AddToPlaylist(System::String^ _fileName)
 	sound_names.push_back(pair);
 }
 
+void ClearPlaylist()
+{
+	sound_names.clear();
+}
+
 bool PlayNextFromPlaylist()
 {
 	if (!sound_names.empty())

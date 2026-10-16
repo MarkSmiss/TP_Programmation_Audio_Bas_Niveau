@@ -82,6 +82,7 @@ int ToggleLoop(const char* _fileName, bool _loopEnabled);
 
 bool IsAudioFinished(std::string _fileName);
 void AddToPlaylist(System::String^ _fileName);
+void ClearPlaylist();
 bool PlayNextFromPlaylist();
 std::string GetPlayingAudioName();
 std::string GetFileName(std::string _audioName);
