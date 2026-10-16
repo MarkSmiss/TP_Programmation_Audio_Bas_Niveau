@@ -222,3 +222,20 @@ int Stop(const char* fileName)
 	}
 	return -1;
 }
+
+int ToggleLoop(const char* _fileName, bool _loopEnabled)
+{
+	ALuint source = sound_sources[_fileName].first;
+
+	alSourcei(source, AL_LOOPING, _loopEnabled ? AL_TRUE : AL_FALSE);
+
+	return 0;
+}
+
+int AdjustSound(const char* _fileName, float _percentVolume)
+{
+	ALuint source = sound_sources[_fileName].first;
+
+
+	return 0;
+}

@@ -56,10 +56,11 @@ namespace WinformCplusplus {
 	private: System::Windows::Forms::MenuStrip^ menuStrip1;
 	private: System::Windows::Forms::ToolStripMenuItem^ filesToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ openToolStripMenuItem;
+	private: System::Windows::Forms::TrackBar^ SoundTrackBar;
 
 
 
-	private: System::Windows::Forms::TrackBar^ trackBar1;
+
 	private: System::Windows::Forms::GroupBox^ groupBox1;
 	private: System::Windows::Forms::Panel^ panel1;
 	private: System::Windows::Forms::GroupBox^ groupBox2;
@@ -67,6 +68,9 @@ namespace WinformCplusplus {
 	private: System::Windows::Forms::Button^ button1;
 	private: System::Windows::Forms::Button^ button4;
 	private: System::Windows::Forms::Button^ button3;
+	private: System::Windows::Forms::CheckBox^ checkBoxLoop;
+
+
 
 
 
@@ -90,16 +94,17 @@ namespace WinformCplusplus {
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->filesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->trackBar1 = (gcnew System::Windows::Forms::TrackBar());
+			this->SoundTrackBar = (gcnew System::Windows::Forms::TrackBar());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
+			this->checkBoxLoop = (gcnew System::Windows::Forms::CheckBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
 			this->button2 = (gcnew System::Windows::Forms::Button());
 			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->button4 = (gcnew System::Windows::Forms::Button());
 			this->button3 = (gcnew System::Windows::Forms::Button());
 			this->menuStrip1->SuspendLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->SoundTrackBar))->BeginInit();
 			this->panel1->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -130,13 +135,14 @@ namespace WinformCplusplus {
 			this->openToolStripMenuItem->Text = L"Open";
 			this->openToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::OpenMenuFile);
 			// 
-			// trackBar1
+			// SoundTrackBar
 			// 
-			this->trackBar1->Location = System::Drawing::Point(281, 3);
-			this->trackBar1->Name = L"trackBar1";
-			this->trackBar1->Orientation = System::Windows::Forms::Orientation::Vertical;
-			this->trackBar1->Size = System::Drawing::Size(45, 131);
-			this->trackBar1->TabIndex = 6;
+			this->SoundTrackBar->Location = System::Drawing::Point(281, 3);
+			this->SoundTrackBar->Name = L"SoundTrackBar";
+			this->SoundTrackBar->Orientation = System::Windows::Forms::Orientation::Vertical;
+			this->SoundTrackBar->Size = System::Drawing::Size(45, 131);
+			this->SoundTrackBar->TabIndex = 6;
+			this->SoundTrackBar->Scroll += gcnew System::EventHandler(this, &MyForm::SoundTrackBar_Scroll);
 			// 
 			// groupBox1
 			// 
@@ -151,9 +157,10 @@ namespace WinformCplusplus {
 			// panel1
 			// 
 			this->panel1->BackColor = System::Drawing::SystemColors::ControlLightLight;
+			this->panel1->Controls->Add(this->checkBoxLoop);
 			this->panel1->Controls->Add(this->groupBox2);
 			this->panel1->Controls->Add(this->button2);
-			this->panel1->Controls->Add(this->trackBar1);
+			this->panel1->Controls->Add(this->SoundTrackBar);
 			this->panel1->Controls->Add(this->button1);
 			this->panel1->Controls->Add(this->button4);
 			this->panel1->Controls->Add(this->button3);
@@ -161,6 +168,17 @@ namespace WinformCplusplus {
 			this->panel1->Name = L"panel1";
 			this->panel1->Size = System::Drawing::Size(551, 464);
 			this->panel1->TabIndex = 9;
+			// 
+			// checkBoxLoop
+			// 
+			this->checkBoxLoop->AutoSize = true;
+			this->checkBoxLoop->Location = System::Drawing::Point(157, 96);
+			this->checkBoxLoop->Name = L"checkBoxLoop";
+			this->checkBoxLoop->Size = System::Drawing::Size(50, 17);
+			this->checkBoxLoop->TabIndex = 9;
+			this->checkBoxLoop->Text = L"Loop";
+			this->checkBoxLoop->UseVisualStyleBackColor = true;
+			this->checkBoxLoop->CheckedChanged += gcnew System::EventHandler(this, &MyForm::checkBoxLoop_CheckedChanged);
 			// 
 			// groupBox2
 			// 
@@ -173,7 +191,7 @@ namespace WinformCplusplus {
 			// 
 			// button2
 			// 
-			this->button2->Location = System::Drawing::Point(104, 121);
+			this->button2->Location = System::Drawing::Point(18, 121);
 			this->button2->Name = L"button2";
 			this->button2->Size = System::Drawing::Size(75, 23);
 			this->button2->TabIndex = 3;
@@ -183,7 +201,7 @@ namespace WinformCplusplus {
 			// 
 			// button1
 			// 
-			this->button1->Location = System::Drawing::Point(104, 92);
+			this->button1->Location = System::Drawing::Point(18, 92);
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(75, 23);
 			this->button1->TabIndex = 1;
@@ -193,7 +211,7 @@ namespace WinformCplusplus {
 			// 
 			// button4
 			// 
-			this->button4->Location = System::Drawing::Point(104, 149);
+			this->button4->Location = System::Drawing::Point(18, 149);
 			this->button4->Name = L"button4";
 			this->button4->Size = System::Drawing::Size(75, 23);
 			this->button4->TabIndex = 5;
@@ -203,7 +221,7 @@ namespace WinformCplusplus {
 			// 
 			// button3
 			// 
-			this->button3->Location = System::Drawing::Point(104, 178);
+			this->button3->Location = System::Drawing::Point(18, 178);
 			this->button3->Name = L"button3";
 			this->button3->Size = System::Drawing::Size(75, 23);
 			this->button3->TabIndex = 4;
@@ -225,7 +243,7 @@ namespace WinformCplusplus {
 			this->Text = L"VeryBadTool";
 			this->menuStrip1->ResumeLayout(false);
 			this->menuStrip1->PerformLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->SoundTrackBar))->EndInit();
 			this->panel1->ResumeLayout(false);
 			this->panel1->PerformLayout();
 			this->ResumeLayout(false);
@@ -241,6 +259,7 @@ namespace WinformCplusplus {
 			marshal_context^ context = gcnew marshal_context();
 			const char* nativeString = context->marshal_as<const char*>(openedFileName);
 			Play(nativeString);
+			ToggleLoop(nativeString, checkBoxLoop->Checked);
 			delete context;
 		}
 		else
@@ -250,8 +269,7 @@ namespace WinformCplusplus {
 	}
 		   //Fonction bouton pour récupérer le sons depuis l'explorateur de fichiers
 	private: System::Void OpenMenuFile(System::Object^ sender, System::EventArgs^ e) {
-		this->openFileDialog1->Filter = "Fichiers audio(*.wav;*.ogg;*.mp3;*.mp4)|*.wav;*.ogg;*.mp3;*.mp4|"
-										"Fichiers WAV(*.wav)|*.wav|"
+		this->openFileDialog1->Filter = "Fichiers WAV(*.wav)|*.wav|"
 										"Fichiers OGG(*.ogg)|*.ogg|"
 										"Tous les fichiers (*.*)|*.*";
 
@@ -334,5 +352,17 @@ namespace WinformCplusplus {
 			MessageBox::Show("No File selected");
 		}
 	}
+
+
+
+private: System::Void checkBoxLoop_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+	marshal_context^ context = gcnew marshal_context();
+	const char* nativeString = context->marshal_as<const char*>(openedFileName);
+
+	ToggleLoop(nativeString, checkBoxLoop->Checked);
+}
+private: System::Void SoundTrackBar_Scroll(System::Object^ sender, System::EventArgs^ e) {
+
+}
 };
 }
