@@ -30,6 +30,13 @@ namespace WinformCplusplus {
 			//
 			openedFileName = System::String::Empty;
 
+			rand = gcnew System::Random();
+			heightBandes = gcnew array<int>(nbBandes);
+			for (int i = 0; i < nbBandes; i++)
+			{
+				heightBandes[i] = 10; //  base height
+			}
+
 			init();
 		}
 
@@ -75,6 +82,7 @@ namespace WinformCplusplus {
 	private: System::Windows::Forms::CheckBox^ checkBoxLoop;
 	private: System::Windows::Forms::ToolStripMenuItem^ playlistToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ addPlaylistButton;
+	private: System::Windows::Forms::Panel^ panelEqualizer;
 
 	private: System::Windows::Forms::ToolStripMenuItem^ loadPlaylistToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ clearPlaylistToolStripMenuItem;
@@ -84,12 +92,10 @@ namespace WinformCplusplus {
 	private: System::Windows::Forms::Timer^ ToolTimer;
 	private: System::Windows::Forms::Button^ button5;
 	private: System::ComponentModel::IContainer^ components;
-
-
-
-
-
-
+	private: System::Windows::Forms::Timer^ animation_Timer;
+		   int nbBandes = 100;
+		   array<int>^ heightBandes;
+		   System::Random^ rand;
 	private:
 		/// <summary>
 		/// Variable nécessaire au concepteur.
@@ -118,6 +124,7 @@ namespace WinformCplusplus {
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
+			this->panelEqualizer = (gcnew System::Windows::Forms::Panel());
 			this->checkBoxLoop = (gcnew System::Windows::Forms::CheckBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
 			this->CurrentSong = (gcnew System::Windows::Forms::Label());
@@ -125,6 +132,7 @@ namespace WinformCplusplus {
 			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->button4 = (gcnew System::Windows::Forms::Button());
 			this->button3 = (gcnew System::Windows::Forms::Button());
+			this->animation_Timer = (gcnew System::Windows::Forms::Timer(this->components));
 			this->ToolTimer = (gcnew System::Windows::Forms::Timer(this->components));
 			this->button5 = (gcnew System::Windows::Forms::Button());
 			this->menuStrip1->SuspendLayout();
@@ -230,6 +238,7 @@ namespace WinformCplusplus {
 			// panel1
 			// 
 			this->panel1->BackColor = System::Drawing::SystemColors::ControlLightLight;
+			this->panel1->Controls->Add(this->panelEqualizer);
 			this->panel1->Controls->Add(this->button5);
 			this->panel1->Controls->Add(this->checkBoxLoop);
 			this->panel1->Controls->Add(this->groupBox2);
@@ -242,6 +251,15 @@ namespace WinformCplusplus {
 			this->panel1->Name = L"panel1";
 			this->panel1->Size = System::Drawing::Size(551, 464);
 			this->panel1->TabIndex = 9;
+			// 
+			// panelEqualizer
+			// 
+			this->panelEqualizer->BackColor = System::Drawing::Color::Black;
+			this->panelEqualizer->Location = System::Drawing::Point(113, 284);
+			this->panelEqualizer->Name = L"panelEqualizer";
+			this->panelEqualizer->Size = System::Drawing::Size(200, 100);
+			this->panelEqualizer->TabIndex = 0;
+			this->panelEqualizer->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MyForm::panelEqualizer_Paint);
 			// 
 			// checkBoxLoop
 			// 
@@ -316,6 +334,12 @@ namespace WinformCplusplus {
 			this->button3->Text = L"Stop";
 			this->button3->UseVisualStyleBackColor = true;
 			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
+			// 
+			// animation_Timer
+			// 
+			this->animation_Timer->Enabled = true;
+			this->animation_Timer->Interval = 80;
+			this->animation_Timer->Tick += gcnew System::EventHandler(this, &MyForm::animationTimer_tick);
 			// 
 			// ToolTimer
 			// 
@@ -546,12 +570,33 @@ namespace WinformCplusplus {
 		{
 			if (listBox1->Items->Count > 0)
 			{
+
 				openedFileName = msclr::interop::marshal_as<System::String^>(GetPlayingAudioName());
 				CurrentSong->Text = listBox1->Items[0]->ToString();
 				listBox1->Items->RemoveAt(0);
+
+				msclr::interop::marshal_context context;
+				const char* nativeString = context.marshal_as<const char*>(openedFileName);
+
+				float volume = static_cast<float>(trackBarVolume->Value) / 100.0f;
+				SetVolume(nativeString, volume);
+
 				isCurrentAudioFinished = false;
 			}
 		}
+	}
+	private: System::Void panelEqualizer_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) {
+	}
+
+	private: System::Void animationTimer_tick(System::Object^ sender, System::EventArgs^ e) {
+		int heightMax = panelEqualizer->Height - 10;
+
+		for (unsigned int i = 0; i < nbBandes; i++)
+		{
+			heightBandes[i] = rand->Next(10, heightMax);
+		}
+
+		panelEqualizer->Invalidate();
 	}
 	};
 }
