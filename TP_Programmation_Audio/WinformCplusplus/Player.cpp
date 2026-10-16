@@ -325,3 +325,16 @@ std::string GetPlayingAudioName()
 {
 	return playingSongName;
 }
+
+std::string GetFileName(std::string _audioName)
+{
+	for (auto& curr : sound_names)
+	{
+		if (curr.second == _audioName)
+		{
+			return curr.first;
+		}
+	}
+
+	return std::string();
+}

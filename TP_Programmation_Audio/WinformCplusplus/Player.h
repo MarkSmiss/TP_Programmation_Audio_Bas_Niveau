@@ -84,6 +84,7 @@ bool IsAudioFinished(std::string _fileName);
 void AddToPlaylist(System::String^ _fileName);
 bool PlayNextFromPlaylist();
 std::string GetPlayingAudioName();
+std::string GetFileName(std::string _audioName);
 
 int SetVolume(const char* _fileName, float _percentVolume);
 int init();

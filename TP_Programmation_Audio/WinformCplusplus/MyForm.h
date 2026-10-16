@@ -15,6 +15,10 @@ namespace WinformCplusplus {
 	using namespace System::Drawing;
 	using namespace msclr::interop;
 
+	using namespace System::IO;
+	using namespace System::Collections::Generic;
+	using namespace System::Xml::Serialization;
+
 	/// <summary>
 	/// Description résumée de MyForm
 	/// </summary>
@@ -82,7 +86,7 @@ namespace WinformCplusplus {
 	private: System::Windows::Forms::CheckBox^ checkBoxLoop;
 	private: System::Windows::Forms::ToolStripMenuItem^ playlistToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ addPlaylistButton;
-	private: System::Windows::Forms::Panel^ panelEqualizer;
+
 
 	private: System::Windows::Forms::ToolStripMenuItem^ loadPlaylistToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ clearPlaylistToolStripMenuItem;
@@ -95,6 +99,7 @@ namespace WinformCplusplus {
 	private: System::Windows::Forms::Timer^ animation_Timer;
 		   int nbBandes = 100;
 		   array<int>^ heightBandes;
+	private: System::Windows::Forms::Panel^ panelEqualizer;
 		   System::Random^ rand;
 	private:
 		/// <summary>
@@ -124,7 +129,7 @@ namespace WinformCplusplus {
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
-			this->panelEqualizer = (gcnew System::Windows::Forms::Panel());
+			this->button5 = (gcnew System::Windows::Forms::Button());
 			this->checkBoxLoop = (gcnew System::Windows::Forms::CheckBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
 			this->CurrentSong = (gcnew System::Windows::Forms::Label());
@@ -134,7 +139,7 @@ namespace WinformCplusplus {
 			this->button3 = (gcnew System::Windows::Forms::Button());
 			this->animation_Timer = (gcnew System::Windows::Forms::Timer(this->components));
 			this->ToolTimer = (gcnew System::Windows::Forms::Timer(this->components));
-			this->button5 = (gcnew System::Windows::Forms::Button());
+			this->panelEqualizer = (gcnew System::Windows::Forms::Panel());
 			this->menuStrip1->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarVolume))->BeginInit();
 			this->groupBox1->SuspendLayout();
@@ -168,7 +173,7 @@ namespace WinformCplusplus {
 			// openToolStripMenuItem
 			// 
 			this->openToolStripMenuItem->Name = L"openToolStripMenuItem";
-			this->openToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+			this->openToolStripMenuItem->Size = System::Drawing::Size(152, 22);
 			this->openToolStripMenuItem->Text = L"Load audio file";
 			this->openToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::OpenMenuFile);
 			// 
@@ -185,26 +190,28 @@ namespace WinformCplusplus {
 			// addPlaylistButton
 			// 
 			this->addPlaylistButton->Name = L"addPlaylistButton";
-			this->addPlaylistButton->Size = System::Drawing::Size(150, 22);
+			this->addPlaylistButton->Size = System::Drawing::Size(180, 22);
 			this->addPlaylistButton->Text = L"Add to playlist";
 			this->addPlaylistButton->Click += gcnew System::EventHandler(this, &MyForm::addPlaylistButton_Click);
 			// 
 			// loadPlaylistToolStripMenuItem
 			// 
 			this->loadPlaylistToolStripMenuItem->Name = L"loadPlaylistToolStripMenuItem";
-			this->loadPlaylistToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+			this->loadPlaylistToolStripMenuItem->Size = System::Drawing::Size(180, 22);
 			this->loadPlaylistToolStripMenuItem->Text = L"Load playlist";
+			this->loadPlaylistToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::loadPlaylistToolStripMenuItem_Click);
 			// 
 			// savePlaylistToolStripMenuItem
 			// 
 			this->savePlaylistToolStripMenuItem->Name = L"savePlaylistToolStripMenuItem";
-			this->savePlaylistToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+			this->savePlaylistToolStripMenuItem->Size = System::Drawing::Size(180, 22);
 			this->savePlaylistToolStripMenuItem->Text = L"Save playlist";
+			this->savePlaylistToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::savePlaylistToolStripMenuItem_Click);
 			// 
 			// clearPlaylistToolStripMenuItem
 			// 
 			this->clearPlaylistToolStripMenuItem->Name = L"clearPlaylistToolStripMenuItem";
-			this->clearPlaylistToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+			this->clearPlaylistToolStripMenuItem->Size = System::Drawing::Size(180, 22);
 			this->clearPlaylistToolStripMenuItem->Text = L"Clear playlist";
 			// 
 			// trackBarVolume
@@ -214,6 +221,7 @@ namespace WinformCplusplus {
 			this->trackBarVolume->Orientation = System::Windows::Forms::Orientation::Vertical;
 			this->trackBarVolume->Size = System::Drawing::Size(45, 131);
 			this->trackBarVolume->TabIndex = 6;
+			this->trackBarVolume->Value = 5;
 			this->trackBarVolume->Scroll += gcnew System::EventHandler(this, &MyForm::SoundTrackBar_Scroll);
 			// 
 			// groupBox1
@@ -252,14 +260,15 @@ namespace WinformCplusplus {
 			this->panel1->Size = System::Drawing::Size(551, 464);
 			this->panel1->TabIndex = 9;
 			// 
-			// panelEqualizer
+			// button5
 			// 
-			this->panelEqualizer->BackColor = System::Drawing::Color::Black;
-			this->panelEqualizer->Location = System::Drawing::Point(113, 284);
-			this->panelEqualizer->Name = L"panelEqualizer";
-			this->panelEqualizer->Size = System::Drawing::Size(200, 100);
-			this->panelEqualizer->TabIndex = 0;
-			this->panelEqualizer->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MyForm::panelEqualizer_Paint);
+			this->button5->Location = System::Drawing::Point(18, 207);
+			this->button5->Name = L"button5";
+			this->button5->Size = System::Drawing::Size(75, 23);
+			this->button5->TabIndex = 10;
+			this->button5->Text = L"Skip";
+			this->button5->UseVisualStyleBackColor = true;
+			this->button5->Click += gcnew System::EventHandler(this, &MyForm::button5_Click);
 			// 
 			// checkBoxLoop
 			// 
@@ -346,15 +355,14 @@ namespace WinformCplusplus {
 			this->ToolTimer->Interval = 50;
 			this->ToolTimer->Tick += gcnew System::EventHandler(this, &MyForm::ToolTimer_Tick);
 			// 
-			// button5
+			// panelEqualizer
 			// 
-			this->button5->Location = System::Drawing::Point(18, 207);
-			this->button5->Name = L"button5";
-			this->button5->Size = System::Drawing::Size(75, 23);
-			this->button5->TabIndex = 10;
-			this->button5->Text = L"Skip";
-			this->button5->UseVisualStyleBackColor = true;
-			this->button5->Click += gcnew System::EventHandler(this, &MyForm::button5_Click);
+			this->panelEqualizer->BackColor = System::Drawing::Color::Black;
+			this->panelEqualizer->Location = System::Drawing::Point(113, 284);
+			this->panelEqualizer->Name = L"panelEqualizer";
+			this->panelEqualizer->Size = System::Drawing::Size(200, 100);
+			this->panelEqualizer->TabIndex = 0;
+			this->panelEqualizer->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MyForm::panelEqualizer_Paint);
 			// 
 			// MyForm
 			// 
@@ -391,6 +399,7 @@ namespace WinformCplusplus {
 			float volume = static_cast<float>(trackBarVolume->Value) / 100.0f;
 
 			int result = Play(nativeString);
+
 			isCurrentAudioFinished = false;
 
 			//Sound polling
@@ -580,8 +589,10 @@ namespace WinformCplusplus {
 
 				float volume = static_cast<float>(trackBarVolume->Value) / 100.0f;
 				SetVolume(nativeString, volume);
-
 				isCurrentAudioFinished = false;
+
+				//Sound polling
+				ToolTimer->Start();
 			}
 		}
 	}
@@ -597,6 +608,65 @@ namespace WinformCplusplus {
 		}
 
 		panelEqualizer->Invalidate();
+	}
+	private: System::Void savePlaylistToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		SaveFileDialog^ saveFileDialog1 = gcnew SaveFileDialog();
+		saveFileDialog1->Filter = "Fichiers XML (*.xml)|*.xml|Tous les fichiers (*.*)|*.*";
+		saveFileDialog1->Title = "Save playlist";
+		saveFileDialog1->DefaultExt = "xml";
+
+		if (saveFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+		{
+			List<String^>^ listData = gcnew List<String^>();
+			for each (Object ^ item in listBox1->Items)
+			{
+				std::string filename = GetFileName(ManagedToNativeString(item->ToString()));
+				System::String^ managedString = gcnew System::String(filename.c_str());
+				listData->Add(managedString);
+			}
+
+			StreamWriter^ writer = gcnew StreamWriter(saveFileDialog1->FileName);
+			XmlSerializer^ serializer = gcnew XmlSerializer(List<String^>::typeid);
+
+			serializer->Serialize(writer, listData);
+			writer->Close();
+		}
+	}
+
+
+	private: System::Void loadPlaylistToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		OpenFileDialog^ openFileDialog1 = gcnew OpenFileDialog();
+		openFileDialog1->Filter = "Fichiers XML (*.xml)|*.xml|Tous les fichiers (*.*)|*.*";
+		openFileDialog1->Title = "Load playlist";
+
+		if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+		{
+			try
+			{
+				StreamReader^ reader = gcnew StreamReader(openFileDialog1->FileName);
+				XmlSerializer^ serializer = gcnew XmlSerializer(List<String^>::typeid);
+
+				List<String^>^ listData = safe_cast<List<String^>^>(serializer->Deserialize(reader));
+				reader->Close();
+
+				listBox1->BeginUpdate();
+				listBox1->Items->Clear();
+				for each (String ^ item in listData)
+				{
+					listBox1->Items->Add(GetAudioName(item));
+					AddToPlaylist(item);
+					Stop(ManagedToNativeString(openedFileName).c_str());
+				}
+				listBox1->EndUpdate();
+			}
+			catch (Exception^ ex)
+			{
+				MessageBox::Show("Error when loading " + ex->Message,
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+		}
 	}
 	};
 }
