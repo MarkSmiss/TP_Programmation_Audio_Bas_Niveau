@@ -542,8 +542,37 @@ namespace WinformCplusplus {
 			if (audioExtension == ".wav" || audioExtension == ".ogg")
 			{
 				System::String^ audioName = GetAudioName(ofd->FileName);
+				bool wasEmpty = (listBox1->Items->Count > 0) ? false : true;
 				listBox1->Items->Add(audioName);
 				AddToPlaylist(ofd->FileName);
+
+				if (wasEmpty && openedFileName == System::String::Empty)
+				{
+					bool result = PlayNextFromPlaylist();
+					if (result)
+					{
+						if (listBox1->Items->Count > 0)
+						{
+							openedFileName = msclr::interop::marshal_as<System::String^>(GetPlayingAudioName());
+							CurrentSong->Text = listBox1->Items[0]->ToString();
+							listBox1->Items->RemoveAt(0);
+
+							msclr::interop::marshal_context context;
+							const char* nativeString = context.marshal_as<const char*>(openedFileName);
+
+							float volume = static_cast<float>(trackBarVolume->Value) / 100.0f;
+							SetVolume(nativeString, volume);
+							isCurrentAudioFinished = false;
+
+							//Sound polling
+							if (!ToolTimer->Enabled)
+							{
+								ToolTimer->Start();
+							}
+							Pause(nativeString);
+						}
+					}
+				}
 			}
 			else
 			{
