@@ -29,7 +29,7 @@ inline std::string GetAudioExtension(const char* _fileName)
 	int Resume(const char* fileName);
 	int Stop(const char* fileName);
 	int ToggleLoop(const char* _fileName, bool _loopEnabled);
-	int AdjustSound(const char* _fileName, float _percentVolume);
+	int SetVolume(const char* _fileName, float _percentVolume);
 	int init();
 
 

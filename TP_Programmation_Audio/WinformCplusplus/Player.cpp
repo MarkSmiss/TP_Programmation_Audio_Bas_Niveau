@@ -227,15 +227,38 @@ int ToggleLoop(const char* _fileName, bool _loopEnabled)
 {
 	ALuint source = sound_sources[_fileName].first;
 
-	alSourcei(source, AL_LOOPING, _loopEnabled ? AL_TRUE : AL_FALSE);
+	if (source)
+	{
+		alSourcei(source, AL_LOOPING, _loopEnabled ? AL_TRUE : AL_FALSE);
+		return -0;
+	}
 
-	return 0;
+
+	return -1;
 }
 
-int AdjustSound(const char* _fileName, float _percentVolume)
+int SetVolume(const char* _fileName, float _percentVolume)
 {
-	ALuint source = sound_sources[_fileName].first;
+	auto it = sound_sources.find(_fileName);
 
+	if (it == sound_sources.end())
+	{
+		return -1;
+	}
 
-	return 0;
+	ALuint source = it->second.first;
+
+	if (_percentVolume < 0.0f)
+	{
+		_percentVolume = 0.0f;
+	}
+
+	if (_percentVolume > 1.0f)
+	{
+		_percentVolume = 1.0f;
+	}
+
+	alSourcef(source, AL_GAIN, _percentVolume);
+
+	return alGetError() == AL_NO_ERROR ? 0 : -1;
 }

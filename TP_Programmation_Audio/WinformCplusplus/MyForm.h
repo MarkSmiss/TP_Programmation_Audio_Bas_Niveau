@@ -56,7 +56,9 @@ namespace WinformCplusplus {
 	private: System::Windows::Forms::MenuStrip^ menuStrip1;
 	private: System::Windows::Forms::ToolStripMenuItem^ filesToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ openToolStripMenuItem;
-	private: System::Windows::Forms::TrackBar^ SoundTrackBar;
+	private: System::Windows::Forms::TrackBar^ trackBarVolume;
+
+
 
 
 
@@ -94,7 +96,7 @@ namespace WinformCplusplus {
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->filesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->SoundTrackBar = (gcnew System::Windows::Forms::TrackBar());
+			this->trackBarVolume = (gcnew System::Windows::Forms::TrackBar());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
 			this->checkBoxLoop = (gcnew System::Windows::Forms::CheckBox());
@@ -104,7 +106,7 @@ namespace WinformCplusplus {
 			this->button4 = (gcnew System::Windows::Forms::Button());
 			this->button3 = (gcnew System::Windows::Forms::Button());
 			this->menuStrip1->SuspendLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->SoundTrackBar))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarVolume))->BeginInit();
 			this->panel1->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -135,14 +137,14 @@ namespace WinformCplusplus {
 			this->openToolStripMenuItem->Text = L"Open";
 			this->openToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::OpenMenuFile);
 			// 
-			// SoundTrackBar
+			// trackBarVolume
 			// 
-			this->SoundTrackBar->Location = System::Drawing::Point(281, 3);
-			this->SoundTrackBar->Name = L"SoundTrackBar";
-			this->SoundTrackBar->Orientation = System::Windows::Forms::Orientation::Vertical;
-			this->SoundTrackBar->Size = System::Drawing::Size(45, 131);
-			this->SoundTrackBar->TabIndex = 6;
-			this->SoundTrackBar->Scroll += gcnew System::EventHandler(this, &MyForm::SoundTrackBar_Scroll);
+			this->trackBarVolume->Location = System::Drawing::Point(281, 3);
+			this->trackBarVolume->Name = L"trackBarVolume";
+			this->trackBarVolume->Orientation = System::Windows::Forms::Orientation::Vertical;
+			this->trackBarVolume->Size = System::Drawing::Size(45, 131);
+			this->trackBarVolume->TabIndex = 6;
+			this->trackBarVolume->Scroll += gcnew System::EventHandler(this, &MyForm::SoundTrackBar_Scroll);
 			// 
 			// groupBox1
 			// 
@@ -160,7 +162,7 @@ namespace WinformCplusplus {
 			this->panel1->Controls->Add(this->checkBoxLoop);
 			this->panel1->Controls->Add(this->groupBox2);
 			this->panel1->Controls->Add(this->button2);
-			this->panel1->Controls->Add(this->SoundTrackBar);
+			this->panel1->Controls->Add(this->trackBarVolume);
 			this->panel1->Controls->Add(this->button1);
 			this->panel1->Controls->Add(this->button4);
 			this->panel1->Controls->Add(this->button3);
@@ -243,7 +245,7 @@ namespace WinformCplusplus {
 			this->Text = L"VeryBadTool";
 			this->menuStrip1->ResumeLayout(false);
 			this->menuStrip1->PerformLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->SoundTrackBar))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarVolume))->EndInit();
 			this->panel1->ResumeLayout(false);
 			this->panel1->PerformLayout();
 			this->ResumeLayout(false);
@@ -258,8 +260,10 @@ namespace WinformCplusplus {
 		{
 			marshal_context^ context = gcnew marshal_context();
 			const char* nativeString = context->marshal_as<const char*>(openedFileName);
+			float volume = static_cast<float>(trackBarVolume->Value) / 100.0f;
 			Play(nativeString);
 			ToggleLoop(nativeString, checkBoxLoop->Checked);
+			SetVolume(nativeString, volume);
 			delete context;
 		}
 		else
@@ -270,8 +274,8 @@ namespace WinformCplusplus {
 		   //Fonction bouton pour récupérer le sons depuis l'explorateur de fichiers
 	private: System::Void OpenMenuFile(System::Object^ sender, System::EventArgs^ e) {
 		this->openFileDialog1->Filter = "Fichiers WAV(*.wav)|*.wav|"
-										"Fichiers OGG(*.ogg)|*.ogg|"
-										"Tous les fichiers (*.*)|*.*";
+			"Fichiers OGG(*.ogg)|*.ogg|"
+			"Tous les fichiers (*.*)|*.*";
 
 		System::Windows::Forms::DialogResult resultat = openFileDialog1->ShowDialog();
 		if (resultat == System::Windows::Forms::DialogResult::OK)
@@ -355,14 +359,25 @@ namespace WinformCplusplus {
 
 
 
-private: System::Void checkBoxLoop_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-	marshal_context^ context = gcnew marshal_context();
-	const char* nativeString = context->marshal_as<const char*>(openedFileName);
+	private: System::Void checkBoxLoop_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		marshal_context^ context = gcnew marshal_context();
+		const char* nativeString = context->marshal_as<const char*>(openedFileName);
 
-	ToggleLoop(nativeString, checkBoxLoop->Checked);
-}
-private: System::Void SoundTrackBar_Scroll(System::Object^ sender, System::EventArgs^ e) {
+		ToggleLoop(nativeString, checkBoxLoop->Checked);
+	}
+	private: System::Void SoundTrackBar_Scroll(System::Object^ sender, System::EventArgs^ e) {
+		if (String::IsNullOrEmpty(openedFileName))
+		{
+			return;
+		}
 
-}
-};
+		msclr::interop::marshal_context context;
+
+		const char* nativeString = context.marshal_as<const char*>(openedFileName);
+
+		float volume = static_cast<float>(trackBarVolume->Value) / 100.0f;
+
+		SetVolume(nativeString, volume);
+	}
+	};
 }
